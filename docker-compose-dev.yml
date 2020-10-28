@@ -1,0 +1,40 @@
+# Use this stack for development
+version: '3'
+services:
+  django: 
+    build:
+      context: ./guacozy_server/
+    restart: always
+    depends_on:
+      - db
+    volumes:
+      - ./guacozy_server:/app
+    environment:
+      - DJANGO_SECRET_KEY=abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz
+      - FIELD_ENCRYPTION_KEY=qjq4ObsXMqiqQyfKgD-jjEGm4ep8RaHKGRg4ohGCi1A=
+      - DJANGO_DB_URL=postgres://postgres@db:5432/postgres
+      - DJANGO_ALLOWED_HOSTS=*
+    ports:
+      - 10080:80
+      - 10443:443
+  react:
+    build:
+      context: ./frontend/
+    volumes:
+      - ./frontend:/frontend
+    ports:
+      - 3000:3000
+    environment:
+      - DJANGO_PROXY_HOST=django
+      - DJANGO_PROXY_PORT=8000
+  guacd:
+    image: guacamole/guacd
+    restart: always
+  db:
+    image: postgres:10.4-alpine
+    restart: always
+    volumes:
+    - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-data:

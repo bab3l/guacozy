@@ -8,3 +8,4 @@ from .credentials import Credentials, StaticCredentials, NamedCredentials, Perso
 from .ticket import Ticket
 from .appsettings import AppSettings
 from .ticketlog import TicketLog
+from .macros import Macros

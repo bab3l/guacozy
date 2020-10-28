@@ -9,18 +9,20 @@ import {GUACAMOLE_STATUS, GUACAMOLE_CLIENT_STATES} from "./const";
  * @param tabIndex - needed to make containing div focusable
  * @param controlSize - bool to specify if this GuacViewer should try to control size (send resize commands)
  * @param screenSize - if set to null, uses automatic adjustment, otherwise uses {width, height} properties from object
+ * @param macro - macro object including unique ID
  * @param node - FlexLayout node. Let's us subscribe to event
  * @param nodeSelectCallback - Callback to call when hosting div is clicked
  * @param nodeDeleteCallback - Callback to call when we need to delete hosting us
  * @returns {*}
  * @constructor
  */
-function GuacViewer({wspath, tabIndex, controlSize = true, controlInput = true, screenSize = null, node, nodeSelectCallback, nodeDeleteCallback}) {
+function GuacViewer({wspath, tabIndex, controlSize = true, controlInput = true, screenSize = null, macro = null, node, nodeSelectCallback, nodeDeleteCallback}) {
     const displayRef = useRef(null);
     const guacRef = useRef(null);
     const connectParamsRef = useRef({});
     const scale = useRef(1);
     const demandedScreenSize = useRef(0);
+    const lastMacroId = useRef(0);
 
     // Timer which controls timeot for display size update
     const updateDisplaySizeTimerRef = useRef(0);
@@ -339,6 +341,31 @@ function GuacViewer({wspath, tabIndex, controlSize = true, controlInput = true, 
             guacRef.current.onclipboard = handleServerClipboardChange;
         }
     }, []);
+
+    // This effect firews when the "macro" prop has changed
+    // and runs a keyboard macro within the guacamole client
+    useEffect(() => {
+	if (macro === null)
+		return;
+	if (macro.id !== lastMacroId.current) {
+	  lastMacroId.current = macro.id;
+	  // Decode and send macro using helper
+	  // Keydown left control
+	  guacRef.current.sendKeyEvent(1, 65507);
+	  // Keydown left alt
+	  guacRef.current.sendKeyEvent(1, 65513);
+	  // Keydown delete
+	  guacRef.current.sendKeyEvent(1, 65535);
+	  console.log("Send ctrl+alt+del");
+	  // Keyup left control
+	  guacRef.current.sendKeyEvent(0, 65507);
+	  // Keyup left alt
+	  guacRef.current.sendKeyEvent(0, 65513);
+	  // Keyup delete
+	  guacRef.current.sendKeyEvent(0, 65535);
+	}
+    }, [macro]);
+
 
     const reconnect = () => {
         setErrorMessage(null);

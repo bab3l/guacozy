@@ -1,40 +1,38 @@
-# Use this stack for development
+# This is a way do build and deploy application for QA - using same Dockerfile which is used to build official image
 version: '3'
 services:
-  django: 
+  server: &server
+    tty: true
     build:
-      context: ./guacozy_server/
+      context: ./
+      args:
+        - DOCKER_TAG=QA
     restart: always
     depends_on:
       - db
-    volumes:
-      - ./guacozy_server:/app
+#   volumes:
+#       e.g. to mount LDAP config:
+#       - /c/Users/username/dockerdata/guacozy/ldap_config.py:/app/guacozy_server/ldap_config.py
+#       - /home/username/dockerdata/guacozy/ldap_config.py:/app/guacozy_server/ldap_config.py
     environment:
-      - DJANGO_SECRET_KEY=youshoulddefinetelychangethistosomethingelseandtakecare
+      - DJANGO_SECRET_KEY=abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz
       - FIELD_ENCRYPTION_KEY=qjq4ObsXMqiqQyfKgD-jjEGm4ep8RaHKGRg4ohGCi1A=
-      - DJANGO_TIME_ZONE=Europe/Vilnius
-      - DJANGO_DB_URL=postgres://postgres@db:5432/postgres
+      - DJANGO_DB_URL=postgres://postgres:8Yl3NEeNY70aEM1czh4ovLIZF5g1CDMt@db:5432/postgres
       - DJANGO_ALLOWED_HOSTS=*
     ports:
-      - 8000:8000
-  react:
-    build:
-      context: ./frontend/
-    volumes:
-      - ./frontend:/frontend
-    ports:
-      - 3000:3000
-    environment:
-      - DJANGO_PROXY_HOST=django
-      - DJANGO_PROXY_PORT=8000
+      - 80:80
+      - 443:443
   guacd:
     image: guacamole/guacd
     restart: always
   db:
-    image: postgres:10.4-alpine
+    image: postgres:13.0-alpine
     restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 8Yl3NEeNY70aEM1czh4ovLIZF5g1CDMt
     volumes:
-    - dev-postgres-data:/var/lib/postgresql/data
-
+    - postgres-data:/var/lib/postgresql/data
 volumes:
-  dev-postgres-data:
+  postgres-data:
+

@@ -13,7 +13,8 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 SECRET_KEY = env('DJANGO_SECRET_KEY', default='abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env.bool('DEBUG', default=False)
+#DEBUG = env.bool('DEBUG', default=False)
+DEBUG = True
 
 ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['localhost', '127.0.0.1'])
 
@@ -42,12 +43,11 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
 ]
 
 # Community packages
 INSTALLED_APPS += [
-    # MPTT - hierarchical objects structur (for Folders)
+    # MPTT - hierarchical objects structure (for Folders)
     'mptt',
     'django_mptt_admin',
 
@@ -71,6 +71,9 @@ INSTALLED_APPS += [
 
     # list filters
     'django_admin_listfilter_dropdown',
+
+    # JSONField database storage
+    'jsonfield',
 ]
 
 # Application packages
@@ -205,6 +208,10 @@ LOGOUT_REDIRECT_URL = '/'
 
 # Field encryption key
 FIELD_ENCRYPTION_KEY = env.str('FIELD_ENCRYPTION_KEY', default='Fg5rOYvc_hUjsWoyOwqW_bm4tuZn9UDbRpN-ajrvvoM=')
+
+# Frame Options to allow use in React app
+# (Required since Django 3.0)
+X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 #
 # LDAP authentication (optional)

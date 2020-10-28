@@ -1,5 +1,5 @@
-ARG BUILDFRONTENDFROM=node:12.2.0-alpine
-ARG SERVERFROM=python:3.7-alpine
+ARG BUILDFRONTENDFROM=node:15.0-alpine
+ARG SERVERFROM=python:3.9-alpine
 
 ####################
 # BUILDER FRONTEND #

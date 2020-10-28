@@ -1,6 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import FlexLayout from "flexlayout-react";
 import {defaultLayout} from "./defaultLayout";
+import GuacViewer from "../Components/GuacViewer/GuacViewer"
 
 const LayoutContext = React.createContext([{}, () => {
 }]);
@@ -55,6 +56,7 @@ const LayoutProvider = (props) => {
                 controlSize: controlSize,
                 // screenSize null - means "auto", otherwise object e.g. {witdh:1024, height:768}
                 screenSize: null,
+		macro: null,
                 nodeSelectCallback: (tabNodeId) => {
                     state.model.doAction(FlexLayout.Actions.selectTab(tabNodeId));
                 },
@@ -63,6 +65,17 @@ const LayoutProvider = (props) => {
                 }
             }
         });
+    };
+
+    const sendTabMacro = (tabid, macro) => {
+	let config = state.model.getNodeById(tabid).getConfig();
+	let macroId = Math.floor(Math.random() * 65536);
+	state.model.doAction(FlexLayout.Actions.updateNodeAttributes(tabid, {
+            config: {
+		...config,
+		macro: { id: macroId },
+            }
+	}));
     };
 
     const updateTabScreenSize = (tabid, screenSize) => {
@@ -94,6 +107,7 @@ const LayoutProvider = (props) => {
             addIframeTab: addIframeTab,
             deleteTab: deleteTab,
             refreshTab: refreshTab,
+	    sendTabMacro: sendTabMacro,
             updateTabScreenSize: updateTabScreenSize,
         }
     };

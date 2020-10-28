@@ -47,6 +47,9 @@ function TabContextMenu(props) {
             case "screenSize":
                 layoutState.actions.updateTabScreenSize(props.tabid, props.screenSize);
                 break;
+            case "sendTabMacro":
+                layoutState.actions.sendTabMacro(props.tabid, props.macro);
+              break;
             default:
                 window.alert("Wrong action: " + action)
         }
@@ -75,9 +78,14 @@ function TabContextMenu(props) {
                         ...props,
                         screenSize: {width: size[0], height: size[1]}
                     }, "screenSize")}>{size[0]} x {size[1]}</Item>
-                )
-                }
+                )}
             </Submenu>
+	    <Separator/>
+	    <Submenu label="Macros">
+	      <Item onClick={({event, props}) => onTabContextMenuAction(event, {
+                  ...props,
+                  macro: ""}, "sendTabMacro")}>Ctrl+Alt+Del</Item>
+	    </Submenu>
         </Menu>
     );
 };
