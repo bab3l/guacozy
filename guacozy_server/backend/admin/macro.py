@@ -1,12 +1,12 @@
 from django.contrib import admin
 from django.forms import ModelForm, TextInput, Textarea
-from backend.models import Macros
+from backend.models import Macro
 
-class MacrosForm(ModelForm):
+class MacroForm(ModelForm):
     class Meta:
         fields = '__all__'
         
-        model = Macros
+        model = Macro
         
         help_texts = {
             'sequence':
@@ -18,8 +18,8 @@ class MacrosForm(ModelForm):
             'sequence': Textarea(attrs={'autocomplete': 'off', 'data-lpignore': 'true', 'rows': 20, 'cols': 60}),
         }
 
-@admin.register(Macros)
-class AppSettingsModelAdmin(admin.ModelAdmin):
-    model = Macros
-    form = MacrosForm
+@admin.register(Macro)
+class MacroModelAdmin(admin.ModelAdmin):
+    model = Macro
+    form = MacroForm
 

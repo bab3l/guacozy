@@ -2,7 +2,7 @@ from django.utils import timezone
 from rest_framework import serializers
 
 from backend.api.utils import user_allowed_folders_ids
-from backend.models import Folder, Ticket, Connection
+from backend.models import Folder, Ticket, Connection, Macro
 from users.models import User
 
 
@@ -96,3 +96,11 @@ class TicketReadSerializer(TicketSerializer):
     def get_connection(obj):
         return {'id': obj.connection.id, 'name': obj.connection.name,
                 'protocol': obj.connection.protocol}
+
+
+class MacroSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Macro
+        fields = ['id', 'name', 'sequence']
+        read_only_fields = ['id', 'name', 'sequence']
+

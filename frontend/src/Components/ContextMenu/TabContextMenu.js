@@ -55,6 +55,8 @@ function TabContextMenu(props) {
         }
     };
 
+    const macroList = appState.macros;
+
     return (
         <Menu animation="fade" id="tab_context_menu" theme="dark">
             <Item
@@ -82,9 +84,12 @@ function TabContextMenu(props) {
             </Submenu>
 	    <Separator/>
 	    <Submenu label="Macros">
-	      <Item onClick={({event, props}) => onTabContextMenuAction(event, {
-                  ...props,
-                  macro: ""}, "sendTabMacro")}>Ctrl+Alt+Del</Item>
+	      {macroList.map(macro =>
+                    <Item onClick={({event, props}) => onTabContextMenuAction(event, {
+                        ...props,
+                        macro: ""
+                    }, "sendTabMacro")}>{macro['name']}</Item>
+              )}
 	    </Submenu>
         </Menu>
     );

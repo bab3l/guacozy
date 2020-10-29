@@ -9,6 +9,7 @@ router.register(r'connections', views.ConnectionViewSet, basename=Connection)
 router.register(r'folders', views.FolderFlatViewSet, basename=Folder)
 router.register(r'tickets', views.TicketViewSet)
 router.register(r'users', views.UserViewSet)
+router.register(r'macros', views.MacroViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
@@ -29,4 +30,6 @@ urlpatterns = [
     # this uses same guacd session, so it means "screen sharing"
     path('tickets/share/<uuid:uuid>/', views.share_ticket_view),
 
+    # Returns list of macros available to user
+    path('macros/list', views.macros_object_list),
 ]

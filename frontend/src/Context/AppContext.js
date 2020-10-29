@@ -19,6 +19,7 @@ const AppProvider = (props) => {
                 setState(oldState => ({...oldState, apiError: null, user: r.data}));
                 updateConnections();
                 updateTickets();
+		updateMacros();
             })
             .catch(e => {
                     if (!e.response) {
@@ -145,6 +146,18 @@ const AppProvider = (props) => {
         setState(state => ({...state, activeModal: modal}));
     };
 
+    const updateMacros = () => {
+        setState((state) => ({...state, macrosLoading: true}));
+        api.getMacros()
+            .then(r => {
+                    setState(state => ({...state, macros: r.data}))
+                }
+            )
+            .finally(() => {
+                setState((state) => ({...state, macrosLoading: false}));
+            })
+    };
+
     const defaultState = {
         api: api,
         apiError: null,
@@ -153,6 +166,8 @@ const AppProvider = (props) => {
         connectionsLoading: false,
         tickets: [],
         ticketsLoading: false,
+	macros: [],
+	macrosLoading: false,
         confirmedUnsafeConnection: false,
         user: null,
         actions: {
@@ -166,6 +181,7 @@ const AppProvider = (props) => {
             logout: logout,
             updateConnections: updateConnections,
             updateTickets: updateTickets,
+            updateMacros: updateMacros,
         }
     };
 

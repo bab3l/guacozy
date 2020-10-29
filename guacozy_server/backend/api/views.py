@@ -12,10 +12,10 @@ from rest_framework.response import Response
 from rules.contrib.rest_framework import AutoPermissionViewSetMixin
 
 from backend.api.utils import user_allowed_folders, folder_to_object, user_allowed_folders_ids
-from backend.models import Folder, Ticket, Connection, TicketLog
+from backend.models import Folder, Ticket, Connection, TicketLog, Macro
 from users.models import User
 from .serializers import UserSerializer, FolderFlatSerializer, TicketSerializer, TicketReadSerializer, \
-    ConnectionSerializer, UserShortSerializer
+    ConnectionSerializer, UserShortSerializer, MacroSerializer
 
 
 # Users
@@ -325,3 +325,16 @@ class TicketViewSet(viewsets.ModelViewSet):
             return TicketReadSerializer
 
         return TicketSerializer
+
+
+class MacroViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Macro.objects.all()
+    permission_classes = [IsAuthenticated]
+    serializer_class = MacroSerializer
+
+@api_view(['GET'])
+def macros_object_list(request):
+    macros = Macro.objects.all()
+    serializer = MacroSerializer(macros, many=True)
+    return Response(serializer.data)
+

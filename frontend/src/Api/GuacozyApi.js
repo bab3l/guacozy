@@ -135,4 +135,8 @@ export default class GuacadminApi {
     //         return this.apiInstance.patch("/connections/" + id + "/", bodyFormData);
     //     }        
     // };
+
+    getMacros() {
+        return this.apiInstance.get("/macros/");
+    }
 }

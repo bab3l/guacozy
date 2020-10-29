@@ -5,4 +5,4 @@ from .credentials import StaticCredentialsAdmin, PersonalNamedCredentialsAdmin
 from .ticket import TicketAdmin
 from .appsettings import AppSettingsModelAdmin
 from .ticketlog import TicketLogAdmin
-from .macros import Macros
+from .macro import MacroModelAdmin

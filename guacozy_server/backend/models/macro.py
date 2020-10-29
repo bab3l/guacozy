@@ -1,7 +1,7 @@
 from django.db import models
 from jsonfield import JSONField
 
-class Macros(models.Model):
+class Macro(models.Model):
     class Meta:
         verbose_name_plural = "Macros"
         verbose_name = "Macro"
