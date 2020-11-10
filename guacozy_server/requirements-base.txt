@@ -1,4 +1,4 @@
-channels==2.4.0
+channels==2.3.0
 Django==2.2.16
 django-admin-list-filter-dropdown==1.0.3
 django-encrypted-model-fields==0.5.8

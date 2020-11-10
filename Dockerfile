@@ -1,5 +1,5 @@
-ARG BUILDFRONTENDFROM=node:15.0-alpine
-ARG SERVERFROM=python:3.9-alpine
+ARG BUILDFRONTENDFROM=node:12.2.0-alpine
+ARG SERVERFROM=python:3.7-alpine
 
 ####################
 # BUILDER FRONTEND #
@@ -12,8 +12,10 @@ ADD frontend/package-lock.json /frontend/
 WORKDIR /frontend
 RUN npm install
 ADD frontend /frontend
-ENV REACT_APP_VERSION=$DOCKER_TAG
-RUN npm run build
+#ENV REACT_APP_VERSION=$DOCKER_TAG
+ENV NODE_ENV=development
+ENV REACT_APP_VERSION=dev-in-docker
+RUN npm run build -- --profile
 
 ##################
 # BUILDER WHEELS #
