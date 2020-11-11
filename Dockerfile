@@ -1,5 +1,5 @@
 ARG BUILDFRONTENDFROM=node:12.2.0-alpine
-ARG SERVERFROM=python:3.7-alpine
+ARG SERVERFROM=python:3.7.5-alpine
 
 ####################
 # BUILDER FRONTEND #
@@ -13,7 +13,9 @@ WORKDIR /frontend
 RUN npm install
 ADD frontend /frontend
 ENV REACT_APP_VERSION=$DOCKER_TAG
-RUN npm run build
+ENV NODE_ENV=development
+ENV REACT_APP_VERSION=dev-in-docker
+RUN npm run build -- --profile
 
 ##################
 # BUILDER WHEELS #
