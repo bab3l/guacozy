@@ -78,7 +78,6 @@ COPY docker /tmp/docker
 
 # Distribute configuration files and prepare dirs for pidfiles
 RUN mkdir -p /run/nginx && \
-    mkdir -p /run/daphne && \
     cd /tmp/docker && \
     mv entrypoint.sh /entrypoint.sh && \
     chmod +x /entrypoint.sh && \
