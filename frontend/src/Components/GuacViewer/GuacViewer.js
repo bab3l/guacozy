@@ -342,28 +342,37 @@ function GuacViewer({wspath, tabIndex, controlSize = true, controlInput = true, 
         }
     }, []);
 
-    // This effect firews when the "macro" prop has changed
+    // This effect fires when the "macro" prop has changed
     // and runs a keyboard macro within the guacamole client
     useEffect(() => {
 	if (macro === null)
-		return;
-	if (macro.id !== lastMacroId.current) {
-	  lastMacroId.current = macro.id;
-	  // Decode and send macro using helper
-	  // Keydown left control
-	  guacRef.current.sendKeyEvent(1, 65507);
-	  // Keydown left alt
-	  guacRef.current.sendKeyEvent(1, 65513);
-	  // Keydown delete
-	  guacRef.current.sendKeyEvent(1, 65535);
-	  console.log("Send ctrl+alt+del");
-	  // Keyup left control
-	  guacRef.current.sendKeyEvent(0, 65507);
-	  // Keyup left alt
-	  guacRef.current.sendKeyEvent(0, 65513);
-	  // Keyup delete
-	  guacRef.current.sendKeyEvent(0, 65535);
-	}
+	    return;
+
+	const sleep = (milliseconds) => {
+            return new Promise(resolve => setTimeout(resolve, milliseconds))
+        };
+	console.log(macro);
+
+	// Decode and send macro
+	// JSON is getting munged for some reason
+	// so single quotes must be replaced with double
+	var json_obj = macro.sequence.replace(/'/g, '"');
+	var sequence = JSON.parse(json_obj);
+	for (var id in sequence) {
+	    switch(sequence[id]["action"]) {
+	        case "keyup":
+	  	    guacRef.current.sendKeyEvent(0, sequence[id]["key"]);
+		    break;
+		case "keydown":
+		    guacRef.current.sendKeyEvent(1, sequence[id]["key"]);
+		    break;
+		case "wait":
+		    ;(async () => {
+                        await sleep(sequence[id]["value"]);
+                    })();
+		    break;
+	    }
+        }
     }, [macro]);
 
 

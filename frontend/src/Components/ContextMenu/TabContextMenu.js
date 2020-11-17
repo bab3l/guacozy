@@ -87,7 +87,7 @@ function TabContextMenu(props) {
 	      {macroList.map(macro =>
                     <Item onClick={({event, props}) => onTabContextMenuAction(event, {
                         ...props,
-                        macro: ""
+                        macro: macro
                     }, "sendTabMacro")}>{macro['name']}</Item>
               )}
 	    </Submenu>

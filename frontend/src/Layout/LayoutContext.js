@@ -69,11 +69,10 @@ const LayoutProvider = (props) => {
 
     const sendTabMacro = (tabid, macro) => {
 	let config = state.model.getNodeById(tabid).getConfig();
-	let macroId = Math.floor(Math.random() * 65536);
 	state.model.doAction(FlexLayout.Actions.updateNodeAttributes(tabid, {
             config: {
 		...config,
-		macro: { id: macroId },
+		macro: macro,
             }
 	}));
     };
