@@ -60,9 +60,6 @@ INSTALLED_APPS += [
     # Django REST Framework
     'rest_framework',
 
-    # Django channels
-    'channels',
-
     # Encrypted model fields
     'encrypted_model_fields',
 
@@ -197,7 +194,7 @@ REST_FRAMEWORK = {
     ]
 }
 
-# Specify ASGI routing (needed for channels)
+# Specify ASGI routing
 ASGI_APPLICATION = "guacozy_server.routing.application"
 
 LOGIN_REDIRECT_URL = '/'

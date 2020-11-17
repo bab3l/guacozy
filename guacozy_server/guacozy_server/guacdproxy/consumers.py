@@ -170,7 +170,10 @@ class GuacamoleConsumer(AsyncWebsocketConsumer):
         if self.allow_control is False and (text_data[0:7] == "5.mouse" or text_data[0:5] == "3.key"):
             return
         if text_data is not None:
-            await sync_to_async(self.gclient.send)(text_data)
+            # Send as task - await is taking 1 second
+            # await sync_to_async(self.gclient.send)(text_data)
+            loop = asyncio.get_event_loop()
+            loop.create_task(sync_to_async(self.gclient.send)(text_data))
 
     async def data_polling(self):
         """
