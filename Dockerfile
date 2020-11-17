@@ -1,5 +1,5 @@
-ARG BUILDFRONTENDFROM=node:12.2.0-alpine
-ARG SERVERFROM=python:3.7-alpine
+ARG BUILDFRONTENDFROM=node:14.15.1-alpine
+ARG SERVERFROM=python:3.9.0-alpine
 
 ####################
 # BUILDER FRONTEND #
@@ -12,9 +12,9 @@ ADD frontend/package-lock.json /frontend/
 WORKDIR /frontend
 RUN npm install
 ADD frontend /frontend
-#ENV REACT_APP_VERSION=$DOCKER_TAG
-ENV NODE_ENV=development
-ENV REACT_APP_VERSION=dev-in-docker
+ENV REACT_APP_VERSION=$DOCKER_TAG
+#ENV NODE_ENV=development
+#ENV REACT_APP_VERSION=dev-in-docker
 RUN npm run build -- --profile
 
 ##################
@@ -78,7 +78,6 @@ COPY docker /tmp/docker
 
 # Distribute configuration files and prepare dirs for pidfiles
 RUN mkdir -p /run/nginx && \
-    mkdir -p /run/daphne && \
     cd /tmp/docker && \
     mv entrypoint.sh /entrypoint.sh && \
     chmod +x /entrypoint.sh && \
