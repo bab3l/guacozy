@@ -285,3 +285,105 @@ if LDAP_CONFIG is not None:
     # Enable DEBUG level if AUTH_LDAP_DEBUG or DEBUG is True
     if AUTH_LDAP_DEBUG or DEBUG:
         ldap_logger.setLevel(logging.DEBUG)
+
+
+#
+# OKTA authentication (optional)
+#
+try:
+        from guacozy_server import okta_config as OKTA_CONFIG
+except ImportError:
+        OKTA_CONFIG = None
+
+if OKTA_CONFIG is not None:
+    # Check that django_okta_auth is installed
+    try:
+        import okta_oauth2
+    except ImportError:
+        raise ImproperlyConfigured(
+            "OKTA authentication has been configured, but django-okta-auth is not installed. Remove "
+            "guacozy_server/okta_config.py to disable OKTA authentication."
+        )
+
+    # Required configuration parameters
+    OKTA_AUTH = {}
+    try:
+        OKTA_AUTH['ORG_URL'] = getattr(OKTA_CONFIG, 'OKTA_ORG_URL')
+    except AttributeError:
+        raise ImproperlyConfigured(
+            "Required parameter OKTA_ORG_URL is missing from okta_config.py."
+        )
+        OKTA_AUTH = {}
+    try:
+        OKTA_AUTH['ISSUER'] = getattr(OKTA_CONFIG, 'OKTA_ISSUER')
+    except AttributeError:
+        raise ImproperlyConfigured(
+            "Required parameter OKTA_ISSUER is missing from okta_config.py."
+        )
+    try:
+        OKTA_AUTH['CLIENT_ID'] = getattr(OKTA_CONFIG, 'OKTA_CLIENT_ID')
+    except AttributeError:
+        raise ImproperlyConfigured(
+            "Required parameter OKTA_CLIENT_ID is missing from okta_config.py."
+        )
+    try:
+        OKTA_AUTH['CLIENT_SECRET'] = getattr(OKTA_CONFIG, 'OKTA_CLIENT_SECRET')
+    except AttributeError:
+        raise ImproperlyConfigured(
+            "Required parameter OKTA_CLIENT_ID is missing from okta_config.py."
+        )
+    try:
+        OKTA_AUTH['SCOPES'] = getattr(OKTA_CONFIG, 'OKTA_SCOPES')
+    except AttributeError:
+        raise ImproperlyConfigured(
+            "Required parameter OKTA_SCOPES is missing from okta_config.py."
+        )
+    try:
+        OKTA_AUTH['REDIRECT_URI'] = getattr(OKTA_CONFIG, 'OKTA_REDIRECT_URI')
+    except AttributeError:
+        raise ImproperlyConfigured(
+            "Required parameter OKTA_REDIRECT_URI is missing from okta_config.py."
+        )
+    try:
+        OKTA_AUTH['LOGIN_REDIRECT_URL'] = getattr(OKTA_CONFIG, 'OKTA_LOGIN_REDIRECT_URL')
+    except AttributeError:
+        raise ImproperlyConfigured(
+            "Required parameter OKTA_LOGIN_REDIRECT_URL is missing from okta_config.py."
+        )
+    try:
+        OKTA_AUTH['CACHE_PREFIX'] = getattr(OKTA_CONFIG, 'OKTA_CACHE_PREFIX')
+    except AttributeError:
+        raise ImproperlyConfigured(
+            "Required parameter OKTA_CACHE_PREFIX is missing from okta_config.py."
+        )
+    try:
+        OKTA_AUTH['CACHE_ALIAS'] = getattr(OKTA_CONFIG, 'OKTA_CACHE_ALIAS')
+    except AttributeError:
+        raise ImproperlyConfigured(
+            "Required parameter OKTA_CACHE_ALIAS is missing from okta_config.py."
+        )
+    try:
+        OKTA_AUTH['PUBLIC_NAMED_URLS'] = getattr(OKTA_CONFIG, 'OKTA_PUBLIC_NAMED_URLS')
+    except AttributeError:
+        raise ImproperlyConfigured(
+            "Required parameter OKTA_PUBLIC_NAMED_URLS is missing from okta_config.py."
+        )
+    try:
+        OKTA_AUTH['PUBLIC_URLS'] = getattr(OKTA_CONFIG, 'OKTA_PUBLIC_URLS')
+    except AttributeError:
+        raise ImproperlyConfigured(
+            "Required parameter OKTA_PUBLIC_URLS is missing from okta_config.py."
+        )
+
+    # Optional configuration parameters
+    OKTA_AUTH['SUPERUSER_GROUP'] = getattr(OKTA_CONFIG, 'OKTA_SUPERUSER_GROUP', None)
+    OKTA_AUTH['MANAGE_GROUPS'] = getattr(OKTA_CONFIG, 'OKTA_MANAGE_GROUPS', False)
+
+
+    # Load the app and configured the authentication backend
+    INSTALLED_APPS.append('okta_oauth2.apps.OktaOauth2Config')
+    AUTHENTICATION_BACKENDS.append('okta_oauth2.backend.OktaBackend')
+    # Register for operation in middleware mode
+    MIDDLEWARE.append('okta_oauth2.middleware.OktaMiddleware')
+
+

@@ -42,7 +42,8 @@ RUN apk update && apk add \
 
 COPY guacozy_server/requirements*.txt ./
 RUN pip install --upgrade pip && \
-    pip wheel --no-cache-dir --wheel-dir /usr/src/app/wheels -r requirements-ldap.txt
+    pip wheel --no-cache-dir --wheel-dir /usr/src/app/wheels -r requirements-ldap.txt && \
+    pip wheel --no-cache-dir --wheel-dir /usr/src/app/wheels -r requirements-okta.txt
 
 #########
 # FINAL #

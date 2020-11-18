@@ -1,0 +1,2 @@
+-r requirements-base.txt
+django-okta-auth==0.6.0
