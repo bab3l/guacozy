@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.contrib.auth.views import LogoutView
 from django.urls import path, include
 from django.views.generic import RedirectView
+from django.conf import settings
 from users.views import CustomLoginView
 
 # Hide "View Site" link, because admin will be often used in IFRAME
@@ -27,7 +28,14 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('backend.api.urls')),
     # path('accounts/', include('django.contrib.auth.urls')),
-    path('accounts/login/', CustomLoginView.as_view(), name='login'),
-    path('accounts/logout/', LogoutView.as_view(), name='logout'),
     path('', RedirectView.as_view(url='/cozy/')),
 ]
+
+if not hasattr(settings, 'OKTA_AUTH'):
+    # Normal or LDAP auth
+    urlpatterns.append(path('accounts/login/', CustomLoginView.as_view(), name='login'))
+    urlpatterns.append(path('accounts/logout/', LogoutView.as_view(), name='logout'))
+else:
+    # Okta auth
+    urlpatterns.append(path('accounts/', include(("okta_oauth2.urls", "okta_oauth2"), namespace="okta_oauth2")))
+
