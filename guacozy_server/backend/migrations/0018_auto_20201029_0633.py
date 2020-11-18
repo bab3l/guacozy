@@ -4,7 +4,7 @@ from django.db import models, migrations
 
 
 def load_macros(apps, schema_editor):
-    Macro = apps.get_model("Macro")
+    Macro = apps.get_model("backend", "Macro")
     macro_cad = Macro(id=0, name='Ctrl+Alt+Del', sequence='[{"action": "keydown","key": 65507},{"action": "keydown","key": 65513},{"action": "keydown","key": 65535},{"action": "wait","value": 100},{"action": "keyup","key": 65535},{"action": "keyup","key": 65507},{"action": "keyup","key": 65513}]')
     macro_cad.save()
     macro_af4 = Macro(id=1, name='Alt+F4', sequence='[{"action": "keydown","key": 65513},{"action": "keydown","key": 65473},{"action": "wait","value": 100},{"action": "keyup","key": 65473},{"action": "keyup","key": 65513}]')
@@ -12,7 +12,7 @@ def load_macros(apps, schema_editor):
 
 
 def delete_macros(apps, schema_editor):
-    Macro = apps.get_model("Macro")
+    Macro = apps.get_model("backend", "Macro")
     Macro.objects.all().delete()
 
 
