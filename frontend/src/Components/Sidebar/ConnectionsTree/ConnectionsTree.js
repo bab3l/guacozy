@@ -311,10 +311,7 @@ function ConnectionsTree({searchString, draggable, disableDraggebleMode}) {
             // Effect actions start
 
             /// convert connection tree from application state to rc-tree format
-	    let newTreeData = [];
-	    if (appState.connections && Array.isArray(appState.connections)) {
-                let newTreeData = appState.connections.map(node => convertTreeNode(node));
-            }
+            let newTreeData = appState.connections.map(node => convertTreeNode(node));
 
             // Save initial tree data so we can later compared if dragging changed it's hierarchy
             setInitialTreeData(JSON.parse(JSON.stringify(newTreeData)));
