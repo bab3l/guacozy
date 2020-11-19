@@ -16,6 +16,11 @@ const AppProvider = (props) => {
 
         api.getCurrentUser()
             .then(r => {
+		// if r.data is a string, and not an object
+		// then we're not logged in.
+		if (typeof(r.data) === 'string' || r.data instanceof String) {
+		    throw { response: r.data };
+		}
                 setState(oldState => ({...oldState, apiError: null, user: r.data}));
                 updateConnections();
                 updateTickets();
@@ -65,13 +70,15 @@ const AppProvider = (props) => {
         api.getTickets()
             .then(r => {
                 let newTickets = r.data;
-                newTickets.sort((a, b) => (a.connection.name > b.connection.name) ? 1 : (a.connection.name < b.connection.name ? -1 : 0));
-                newTickets = newTickets.map(ticket => ({
-                    ...ticket,
-                    created: Date.parse(ticket.created),
-                    validto: Date.parse(ticket.validto),
-                }));
-                setState(state => ({...state, tickets: newTickets}));
+		if (newTickets && Array.isArray(newTickets)) {
+                    newTickets.sort((a, b) => (a.connection.name > b.connection.name) ? 1 : (a.connection.name < b.connection.name ? -1 : 0));
+                    newTickets = newTickets.map(ticket => ({
+                        ...ticket,
+                        created: Date.parse(ticket.created),
+                        validto: Date.parse(ticket.validto),
+                    }));
+                    setState(state => ({...state, tickets: newTickets}));
+	        }
             })
             .finally(() => {
                 setState((state) => ({...state, ticketsLoading: false}));

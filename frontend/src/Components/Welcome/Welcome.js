@@ -84,7 +84,7 @@ function getConnectionsCount(tree, protocol) {
         filter = (node) => node.protocol === protocol;
     }
 
-    if (tree) {
+    if (tree && Array.isArray(tree)) {
         return tree.reduce(function (total, node) {
             return total + ((!node.isFolder && filter(node)) ? 1 : 0) + getConnectionsCount(node.children, protocol);
         }, 0)

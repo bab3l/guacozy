@@ -38,7 +38,9 @@ RUN apk update && apk add \
     postgresql-dev \
     python3-dev \
     libffi-dev \
-    openldap-dev
+    openldap-dev \
+    git
+# Including git (for custom Okta lib)
 
 COPY guacozy_server/requirements*.txt ./
 RUN pip install --upgrade pip && \

@@ -31,7 +31,7 @@ urlpatterns = [
     path('', RedirectView.as_view(url='/cozy/')),
 ]
 
-if not hasattr(settings, 'OKTA_AUTH'):
+if settings.OKTA_AUTH is None:
     # Normal or LDAP auth
     urlpatterns.append(path('accounts/login/', CustomLoginView.as_view(), name='login'))
     urlpatterns.append(path('accounts/logout/', LogoutView.as_view(), name='logout'))

@@ -55,7 +55,10 @@ function TabContextMenu(props) {
         }
     };
 
-    const macroList = appState.macros;
+    let macroList = appState.macros;
+    if (!Array.isArray(macroList)) {
+        macroList = [];
+    }
 
     return (
         <Menu animation="fade" id="tab_context_menu" theme="dark">

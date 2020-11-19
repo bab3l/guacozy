@@ -290,6 +290,7 @@ if LDAP_CONFIG is not None:
 #
 # OKTA authentication (optional)
 #
+OKTA_AUTH = None
 try:
         from guacozy_server import okta_config as OKTA_CONFIG
 except ImportError:
@@ -313,7 +314,6 @@ if OKTA_CONFIG is not None:
         raise ImproperlyConfigured(
             "Required parameter OKTA_ORG_URL is missing from okta_config.py."
         )
-        OKTA_AUTH = {}
     try:
         OKTA_AUTH['ISSUER'] = getattr(OKTA_CONFIG, 'OKTA_ISSUER')
     except AttributeError:
