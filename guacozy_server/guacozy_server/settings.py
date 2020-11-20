@@ -386,4 +386,34 @@ if OKTA_CONFIG is not None:
     # Register for operation in middleware mode
     MIDDLEWARE.append('okta_oauth2.middleware.OktaMiddleware')
 
+#
+# SAML2 authentication (optional)
+#
+SAML2_AUTH = None
+try:
+        from guacozy_server import saml2_config as SAML2_CONFIG
+except ImportError:
+        SAML2_CONFIG = None
+
+if SAML2_CONFIG is not None:
+    # Check that django-saml2-auth is installed
+    try:
+        import django_saml2_auth
+    except ImportError:
+        raise ImproperlyConfigured(
+            "SAML2 authentication has been configured, but django-saml2-auth is not installed. Remove "
+            "guacozy_server/okta_config.py to disable SAML2 authentication."
+        )
+
+    # Required configuration parameters
+    SAML2_AUTH = {}
+    try:
+        SAML2_AUTH = getattr(SAML2_CONFIG, 'SAML2_AUTH')
+    except AttributeError:
+        raise ImproperlyConfigured(
+            "Required parameter SAML2_AUTH is missing from saml2_config.py."
+        )
+
+    # Load the app and configured the authentication backend
+    INSTALLED_APPS.append('django_saml2_auth')
 

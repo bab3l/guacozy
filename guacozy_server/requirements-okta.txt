@@ -1,4 +1,3 @@
--r requirements-base.txt
-# Cannot use for now due to bug - using git source
+# Cannot use remote source for now due to bug - using git source
 # django-okta-auth==0.6.0
 -e git://github.com/bab3l/django-okta-auth.git@aeb50284ad9af749793d9a5fdc1cc64442074702#egg=django-okta-auth

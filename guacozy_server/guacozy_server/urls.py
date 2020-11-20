@@ -31,11 +31,16 @@ urlpatterns = [
     path('', RedirectView.as_view(url='/cozy/')),
 ]
 
-if settings.OKTA_AUTH is None:
+if settings.OKTA_AUTH is not None:
+    # Okta auth
+    urlpatterns.append(path('accounts/', include(("okta_oauth2.urls", "okta_oauth2"), namespace="okta_oauth2")))
+elif settings.SAML2_AUTH is not None:
+    import django_saml2_auth.views
+    urlpatterns.append(path('saml2_auth/', include('django_saml2_auth.urls')))
+    urlpatterns.append(path('accounts/login/', django_saml2_auth.views.signin))
+    urlpatterns.append(path('admin/login/', django_saml2_auth.views.signin))
+else:
     # Normal or LDAP auth
     urlpatterns.append(path('accounts/login/', CustomLoginView.as_view(), name='login'))
     urlpatterns.append(path('accounts/logout/', LogoutView.as_view(), name='logout'))
-else:
-    # Okta auth
-    urlpatterns.append(path('accounts/', include(("okta_oauth2.urls", "okta_oauth2"), namespace="okta_oauth2")))
 

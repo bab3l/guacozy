@@ -39,13 +39,15 @@ RUN apk update && apk add \
     python3-dev \
     libffi-dev \
     openldap-dev \
-    git
+    git \
+    xmlsec-dev \
+    libxml2-dev \
+    libxslt-dev
 # Including git (for custom Okta lib)
 
 COPY guacozy_server/requirements*.txt ./
 RUN pip install --upgrade pip && \
-    pip wheel --no-cache-dir --wheel-dir /usr/src/app/wheels -r requirements-ldap.txt && \
-    pip wheel --no-cache-dir --wheel-dir /usr/src/app/wheels -r requirements-okta.txt
+    pip wheel --no-cache-dir --wheel-dir /usr/src/app/wheels -r requirements-full.txt
 
 #########
 # FINAL #
@@ -63,7 +65,8 @@ RUN apk update && apk add --no-cache \
       openssl \
       memcached \
       nginx \
-	  supervisor
+      supervisor \
+      xmlsec
 
 # Inject built wheels and install them
 COPY --from=builder-wheels /usr/src/app/wheels /wheels
