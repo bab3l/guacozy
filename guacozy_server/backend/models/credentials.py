@@ -28,7 +28,7 @@ class CredentialsFieldsMixin(models.Model):
                               max_length=50, blank=True)
 
     private_key = models.TextField(verbose_name="Private Key", blank=True)
-    passphrase = models.CharField(verbose_name="Passphrase", blank=True,
+    passphrase = EncryptedCharField(verbose_name="Passphrase", blank=True,
                                   max_length=32)
 
     # save password on init,

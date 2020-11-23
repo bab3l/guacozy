@@ -19,7 +19,7 @@ class CredentialsForm(ModelForm):
             'username': TextInput(attrs={'autocomplete': 'off', 'data-lpignore': 'true'}),
             'domain': TextInput(attrs={'autocomplete': 'off', 'data-lpignore': 'true'}),
             'password': PasswordInput(attrs={'autocomplete': 'off', 'data-lpignore': 'true'}),
-            'passphrase': TextInput(attrs={'autocomplete': 'off', 'data-lpignore': 'true'}),
+            'passphrase': PasswordInput(attrs={'autocomplete': 'off', 'data-lpignore': 'true'}),
         }
 
 
