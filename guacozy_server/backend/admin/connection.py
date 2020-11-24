@@ -29,6 +29,7 @@ class ConnectionChildForm(ModelForm):
             'guacdserver': 'Override default guacd server.',
             # RDP specific
             'server_layout': 'failsafe will work on any keyboard but has a problem with Ctrl key',
+            'remote_app': 'Windows requires a special notation for the names of remote applications. The names of remote applications must be prefixed with two vertical bars. For example, if you have created a remote application on your server for notepad.exe and have assigned it the name "notepad", you would set this parameter to: "||notepad".',
             'ignore_cert': 'Ignore server certificates.',
             # VNC Specific
             'cursor_remote': 'If set, the mouse pointer will be rendered remotely, and the local position of the mouse pointer will be indicated by a small dot. A remote mouse cursor will feel slower than a local cursor, but may be necessary if the VNC server does not support sending the cursor image to the client.',
@@ -98,6 +99,22 @@ class ConnectionRdpAdmin(ConnectionChildAdmin):
                        'server_layout',
                        'color_depth',
                        'resize_method'
+                       ),
+        }),
+        ('RDP Gateway Settings', {
+            'classes': ('wide',),
+            'fields': (('gateway_hostname','gateway_port'),
+                       'gateway_credentials',
+                       ('gateway_username',
+                       'gateway_password',
+                       'gateway_domain'
+                       )),
+        }),
+        ('RemoteApp Settings', {
+            'classes': ('wide',),
+            'fields': ('remote_app',
+                       'remote_app_working_dir',
+                       'remote_app_args'
                        ),
         })
     )
