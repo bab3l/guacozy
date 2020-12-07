@@ -1,5 +1,5 @@
-ARG BUILDFRONTENDFROM=node:14.15.1-alpine
-ARG SERVERFROM=python:3.9.0-alpine
+ARG BUILDFRONTENDFROM=node:14.15.1-buster
+ARG SERVERFROM=python:3.9.0-buster
 
 ####################
 # BUILDER FRONTEND #
@@ -21,33 +21,45 @@ RUN npm run build -- --profile
 # BUILDER WHEELS #
 ##################
 
-FROM ${SERVERFROM} as builder-wheels
+#FROM ${SERVERFROM} as builder-wheels
 
 # set work directory
-WORKDIR /usr/src/app
+#WORKDIR /usr/src/app
 
 # set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+#ENV PYTHONDONTWRITEBYTECODE 1
+#ENV PYTHONUNBUFFERED 1
 
 # install psycopg2 dependencies
-RUN apk update && apk add \
-    build-base \
-    ca-certificates \
-    musl-dev \
-    postgresql-dev \
-    python3-dev \
-    libffi-dev \
-    openldap-dev \
-    git \
-    xmlsec-dev \
-    libxml2-dev \
-    libxslt-dev
-# Including git (for custom Okta lib)
+#RUN apk update && apk add \
+#    build-base \
+#    ca-certificates \
+#    musl-dev \
+#    postgresql-dev \
+#    python3-dev \
+#    libffi-dev \
+#    openldap-dev \
+#    git \
+#    xmlsec-dev \
+#    libxml2-dev \
+#    libxslt-dev
+#RUN apt update && apt -y install \
+#    build-essential \
+#    ca-certificates \
+#    musl-dev \
+#    libpq-dev \
+#    python3-dev \
+#    libffi-dev \
+#    libldap-dev \
+#    git \
+#    libsasl2-dev \
+#    libxmlsec1-dev \
+#    libxml2-dev \
+#    libxslt-dev
 
-COPY guacozy_server/requirements*.txt ./
-RUN pip install --upgrade pip && \
-    pip wheel --no-cache-dir --wheel-dir /usr/src/app/wheels -r requirements-full.txt
+#COPY guacozy_server/requirements*.txt ./
+#RUN pip install --upgrade pip && \
+#    pip wheel --no-cache-dir --wheel-dir /usr/src/app/wheels -r requirements-full.txt
 
 #########
 # FINAL #
@@ -55,23 +67,42 @@ RUN pip install --upgrade pip && \
 
 FROM ${SERVERFROM}
 
-COPY --from=builder-wheels /usr/src/app/wheels /wheels
+#COPY --from=builder-wheels /usr/src/app/wheels /wheels
 
 # install dependencies
-RUN apk update && apk add --no-cache \
+#RUN apk update && apk add --no-cache \
+#      bash \
+#      libpq \
+#      ca-certificates \
+#      openssl \
+#      memcached \
+#      nginx \
+#      supervisor \
+#      xmlsec
+RUN apt update && apt -y install \
       bash \
-      libpq \
+      libpq-dev \
+      libldap2-dev \
+      libsasl2-dev \
       ca-certificates \
       openssl \
       memcached \
       nginx \
       supervisor \
-      xmlsec
+      xmlsec1 \
+      libxml2-dev \
+      libxmlsec1-dev \
+      libxmlsec1-openssl 
 
 # Inject built wheels and install them
-COPY --from=builder-wheels /usr/src/app/wheels /wheels
-RUN pip install --upgrade pip && \
-    pip install --no-cache /wheels/*
+#COPY --from=builder-wheels /usr/src/app/wheels /wheels
+#RUN pip install --upgrade pip && \
+#    pip install --no-cache /wheels/*
+
+COPY guacozy_server/requirements-* /tmp/
+
+RUN pip install --upgrade pip
+RUN pip install -r /tmp/requirements-full.txt
 
 # Inject django app
 COPY guacozy_server  /app

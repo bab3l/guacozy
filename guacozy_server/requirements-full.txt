@@ -1,4 +1,4 @@
 -r requirements-base.txt
 -r requirements-ldap.txt
--r requirements-okta.txt
+#-r requirements-okta.txt
 -r requirements-saml.txt
