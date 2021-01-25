@@ -44,7 +44,7 @@ class GuacamoleConsumer(AsyncWebsocketConsumer):
                 params['audio'] = [p[1]]
 
         try:
-            ticket = await database_sync_to_async(Ticket.objects.get)(id=self.scope["url_route"]["kwargs"]["ticket"])
+            ticket = await database_sync_to_async(Ticket.objects.select_related('user').select_related('connection').get)(id=self.scope["url_route"]["kwargs"]["ticket"])
             self.allow_control = ticket.control
         except Ticket.DoesNotExist:
             # https://guacamole.apache.org/doc/gug/protocol-reference.html#status-codes
@@ -103,10 +103,8 @@ class GuacamoleConsumer(AsyncWebsocketConsumer):
         sessionid = await self.get_ticket_sessionid(ticket)
 
         if not sessionid:
-            # parameters = ticket.connection.get_guacamole_parameters()
-            parameters = Connection.objects.get(
-                pk=ticket.connection.pk).get_guacamole_parameters(
-                self.scope['user'])
+            parameters = await self.get_connection_parameters(
+                    ticket.connection.pk, self.scope['user'])
 
             if parameters['passthrough_credentials']:
                 try:
@@ -198,6 +196,13 @@ class GuacamoleConsumer(AsyncWebsocketConsumer):
                     continue
                 await self.send(text_data=content)
 
+
+    @database_sync_to_async
+    def get_connection_parameters(self, connectionid, user):
+        return Connection.objects.get(
+                pk=connectionid).get_guacamole_parameters(user)
+
+
     @database_sync_to_async
     def update_ticket_sessionid(self, ticket, sessionid):
         """
@@ -235,9 +240,15 @@ class GuacamoleConsumer(AsyncWebsocketConsumer):
         """
         Get connection definition from ticket or from tickets's parent if this is a shared ticket
         """
+        connection = None
         if not ticket.parent:
-            return ticket.connection
-        return ticket.parent.connection
+            connection = ticket.connection_id
+        else:
+            connection = ticket.parent.connection_id
+        if connection:
+            return Connection.objects.select_related('guacdserver').get(pk=connection)
+        return None
+
 
     @database_sync_to_async
     def get_default_guacd_server(self):

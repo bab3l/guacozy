@@ -16,7 +16,7 @@ services:
 #       - /home/username/dockerdata/guacozy/ldap_config.py:/app/guacozy_server/ldap_config.py
 #       e.g. to mount OKTA config:
 #        - /home/ubuntu/okta_config.py:/app/guacozy_server/okta_config.py
-        - /home/ubuntu/saml2_config.py:/app/guacozy_server/saml2_config.py
+#        - /home/ubuntu/saml2_config.py:/app/guacozy_server/saml2_config.py
         - /home/ubuntu/debug/ssl:/ssl
     environment:
       - DJANGO_SECRET_KEY=abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz
