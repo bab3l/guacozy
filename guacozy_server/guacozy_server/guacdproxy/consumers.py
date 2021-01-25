@@ -44,7 +44,7 @@ class GuacamoleConsumer(AsyncWebsocketConsumer):
                 params['audio'] = [p[1]]
 
         try:
-            ticket = await database_sync_to_async(Ticket.objects.get)(id=self.scope["url_route"]["kwargs"]["ticket"])
+            ticket = await database_sync_to_async(Ticket.objects.select_related('user').get)(id=self.scope["url_route"]["kwargs"]["ticket"])
             self.allow_control = ticket.control
         except Ticket.DoesNotExist:
             # https://guacamole.apache.org/doc/gug/protocol-reference.html#status-codes
@@ -103,10 +103,8 @@ class GuacamoleConsumer(AsyncWebsocketConsumer):
         sessionid = await self.get_ticket_sessionid(ticket)
 
         if not sessionid:
-            # parameters = ticket.connection.get_guacamole_parameters()
-            parameters = Connection.objects.get(
-                pk=ticket.connection.pk).get_guacamole_parameters(
-                self.scope['user'])
+            parameters = await self.get_connection_parameters(
+                    ticket.connection.pk, self.scope['user'])
 
             if parameters['passthrough_credentials']:
                 try:
@@ -197,6 +195,13 @@ class GuacamoleConsumer(AsyncWebsocketConsumer):
                 if content == "4.size,1.1,1.0,1.0;":
                     continue
                 await self.send(text_data=content)
+
+
+    @database_sync_to_async
+    def get_connection_parameters(self, connectionid, user):
+        return Connection.objects.get(
+                pk=connectionid).get_guacamole_parameters(user)
+
 
     @database_sync_to_async
     def update_ticket_sessionid(self, ticket, sessionid):
