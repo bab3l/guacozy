@@ -16,6 +16,7 @@ class GuacamoleConsumer(AsyncWebsocketConsumer):
     gclient = None
     ticket = None
     allow_control = False
+    is_open = False
 
     async def connect(self):
         """
@@ -28,6 +29,7 @@ class GuacamoleConsumer(AsyncWebsocketConsumer):
 
         # check if client indicated 'guacamole' as supported subprotocols
         if 'guacamole' not in self.scope['subprotocols']:
+            self.is_open = False
             await self.close()
             return
 
@@ -129,6 +131,7 @@ class GuacamoleConsumer(AsyncWebsocketConsumer):
         #  If we have successfully connected,
         #  Guacamole Client should have an instance id
         if not self.gclient.id:
+            self.is_open = False
             await self.close()
             return
 
@@ -137,6 +140,7 @@ class GuacamoleConsumer(AsyncWebsocketConsumer):
         await self.log_ticket_action(ticket, 'connect', self.scope)
 
         # start polling loop function,
+        self.is_open = True
         asyncio.create_task(self.data_polling())
 
         # After we finish handshake and initiated polling loop
@@ -148,6 +152,7 @@ class GuacamoleConsumer(AsyncWebsocketConsumer):
         Websocket disconnect event handler, which closes session with guacd on  websocket disconnect
         """
         # socket disconnected - inform server that we are out
+        self.is_open = False
         await self.log_ticket_action(self.ticket, 'disconnect', self.scope)
         await sync_to_async(self.gclient.close)()
 
@@ -171,15 +176,16 @@ class GuacamoleConsumer(AsyncWebsocketConsumer):
             # Send as task - await is taking 1 second
             # await sync_to_async(self.gclient.send)(text_data)
             loop = asyncio.get_event_loop()
-            loop.create_task(sync_to_async(self.gclient.send)(text_data))
+            task = loop.create_task(sync_to_async(self.gclient.send)(text_data))
 
     async def data_polling(self):
         """
         Polling loop - receives data from GuacamoleClient and passes to websocket
         """
-        while True:
+        loop = asyncio.get_event_loop()
+        while self.is_open:
             content = await sync_to_async(self.gclient.receive)()
-            if content:
+            if content and self.is_open:
                 # this is dirty workaround for problem.
                 # If we reconnect, servers sends layer size 0x0
                 # after this it sends normal size, but this causes
@@ -194,7 +200,8 @@ class GuacamoleConsumer(AsyncWebsocketConsumer):
                 # we just skip this command.
                 if content == "4.size,1.1,1.0,1.0;":
                     continue
-                await self.send(text_data=content)
+                #await self.send(text_data=content)
+                task = loop.create_task(self.send(text_data=content))
 
 
     @database_sync_to_async
